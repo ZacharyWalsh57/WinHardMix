@@ -8,7 +8,7 @@ from pycaw.pycaw import AudioUtilities, ISimpleAudioVolume
 print("\n---- WinHardMix V1.0 ----\n")
 
 try:
-    ARDUINO_SERIAL = serial.Serial('COM4', 115200, timeout=0)
+    ARDUINO_SERIAL = serial.Serial('COM5', 57600, timeout=0)
     print("PORT FOUND")
 except:
     print("SERIAL PORT NOT FOUND")

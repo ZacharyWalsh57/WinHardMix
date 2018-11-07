@@ -5,41 +5,44 @@
 //This sketch is ONLY FOR THE POTS.  The LCD will be added later on.
 
 //PIN OUTPUTS:
-#define STATUS_LED 19 //LED for status. Hooked onto 19
+#define STATUS_LED 13 //LED for status. Hooked onto 13
 #define POT_1 A5 //Volume 1
 #define POT_2 A4 //Volume 2
 #define POT_3 A3 //Volume 3
 #define POT_4 A2 //Volume 4
 
-
-//Variables to hold the POT values in a 0-1023 value.
-int ANALOG_1 = 0;
-int ANALOG_2 = 0;
-int ANALOG_3 = 0;
-int ANALOG_4 = 0;
-
 void setup() {
-    Serial.begin(115200);
+    Serial.begin(57600);
     
     pinMode(STATUS_LED, OUTPUT);
     digitalWrite(STATUS_LED, HIGH);
     
     Serial.println("HARDMIX10 SERIAL PROCESSING. IF YOU SEE THIS I HOPE YOU KNOW WHAT YOURE DOING...");
+    delay(2500);
 }
 
 void loop() {
     //Grab analog vlaues on each pot.
-    ANALOG_1 = analogRead(POT_1);
-    ANALOG_2 = analogRead(POT_2);
-    ANALOG_3 = analogRead(POT_3);
-    ANALOG_4 = analogRead(POT_4);
+    int ANALOG_1 = analogRead(POT_1);
+    int ANALOG_2 = analogRead(POT_2);
+    int ANALOG_3 = analogRead(POT_3);
+    int ANALOG_4 = analogRead(POT_4);
 
-    //Convert each value to a 0-100 Volume level. 
-    float VOLUME_1 = ((ANALOG_1 * (5/1023.0)) / 1023.0) * 100;
-    float VOLUME_2 = ((ANALOG_2 * (5/1023.0)) / 1023.0) * 100;
-    float VOLUME_3 = ((ANALOG_3 * (5/1023.0)) / 1023.0) * 100;
-    float VOLUME_4 = ((ANALOG_1 * (5/1023.0)) / 1023.0) * 100;
+    //Convert each value to a 0-100 volume level.
+    //FIXME: Since I built this like an idiot, the volume is subtracted from 100.
+    //FIXME: This is because I pull the value from pin 2 compared to power and not ground on the circuit. 
+    float VOLUME_1 = 100.0 - ((ANALOG_1 / 1023.0) * 100);
+    float VOLUME_2 = 100.0 - ((ANALOG_2 / 1023.0) * 100);
+    float VOLUME_3 = 100.0 - ((ANALOG_3 / 1023.0) * 100);
+    float VOLUME_4 = 100.0 - ((ANALOG_4 / 1023.0) * 100);
 
-
+    //Assemble a list of all four volumes.  Take them and print each to the serial output.
+    int VOLUMES[] = {VOLUME_1, VOLUME_2, VOLUME_3, VOLUME_4};
+    int SELECTED;
+    for (SELECTED = 0; SELECTED < 4; SELECTED = SELECTED + 1) {
+        Serial.print(VOLUMES[SELECTED]);
+        Serial.print(" ");
+    }
+    Serial.println("");
 }
 
