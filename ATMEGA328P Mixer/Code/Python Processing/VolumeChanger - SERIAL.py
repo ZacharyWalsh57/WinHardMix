@@ -56,7 +56,7 @@ def PORT_CONNECITON(PORT_NUMBER):
         while ATTEMPTS <= 3 and PORT_CONNECTED == False:
             try: 
                 print("ATTEMPT " + str(ATTEMPTS) + ".....")
-                ATMEGA_SERIAL = serial.Serial(PORT_NUMBER, 57600, timeout=0)
+                ATMEGA_SERIAL = serial.Serial(PORT_NUMBER, 115200, timeout=0)
                 ATTEMPTS = 3
                 print("PORT OPENED!\n")
                 PORT_CONNECTED = True
@@ -75,7 +75,7 @@ def PORT_CONNECITON(PORT_NUMBER):
         ATTEMPTS = 1
         while ATTEMPTS <= 3 and PORT_CONNECTED == False:
             try: 
-                ATMEGA_SERIAL = serial.Serial(PORT_NUMBER, 57600, timeout=0)
+                ATMEGA_SERIAL = serial.Serial(PORT_NUMBER, 115200, timeout=0)
                 ATTEMPTS = 3
                 PORT_CONNECTED = True
                 ATMEGA_SERIAL.close()
@@ -143,7 +143,7 @@ TASK_SELECTION()
 #Now for the just super duper fun part.  Volume control.  Really (I MEAN REALLY) RIVETING stuff in here.
 #Allocate all potential endpoints for every program. 
 VOLUME_ENDPOINTS = AudioUtilities.GetAllSessions()
-SERIAL_COMS = serial.Serial(PORT, 57600, timeout=0)
+SERIAL_COMS = serial.Serial(PORT, 115200, timeout=0)
 
 #This function does the following things:
 # 1: It reads the serial inputs (Finally lol. When we go GUI it's not this bad.)
@@ -203,3 +203,4 @@ while True:
     ENDPOINT_ADJUSTMENT(SERIAL_COMS)
     
 #BOOM BITCH IT WORKS.
+#Not sure what else this needs aside from getting the wirleess module connected and programmed.

@@ -12,7 +12,7 @@
 #define POT_4 A2 //Volume 4
 
 void setup() {
-    Serial.begin(57600);
+    Serial.begin(9600);
     
     pinMode(STATUS_LED, OUTPUT);
     digitalWrite(STATUS_LED, HIGH);
