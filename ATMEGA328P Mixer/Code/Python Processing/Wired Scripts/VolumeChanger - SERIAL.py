@@ -8,22 +8,19 @@ from pycaw.pycaw import AudioUtilities, ISimpleAudioVolume #Used for setting the
 import os #Use this to clear out the terminal output for the user when debug is set to off.
 
 #TRIGGER TO SHOW SERIAL OUTPUT OR NOT!!
-SERIAL_DEBUG = False
+SERIAL_DEBUG = True
+BAUD_RATE = 115200 #Added this in.  I'm suddenly having issue keeping the audio from cutting... no idea why
 
 #Welcome Message
+os.system('cls' if os.name == 'nt' else 'clear') #Clear Screen.
 print("\n \t\t----- HardMix10 ----- ")
 print("\tThe Mixer Everyone Wanted, But I Built")
-print("\t\tVERSION 1.0 - STANDALONE\n")
+print("\t\tVERSION 1.0 - ATMEGA328\n")
 
 #Get a list of all possible serial ports the user can pick from.  This way anyone can use this thing.
 COMLIST = serial.tools.list_ports.comports()
 ACTIVE_PORTS = []
 for PORT in COMLIST: ACTIVE_PORTS.append(PORT.device)
-
-#FIXME: GET RID OF THIS SHIT. IT HURTS ME A BIT.
-#This delay blows, but it makes 100% sure that the bootloader has finished up and is passing serial values. 
-print("Waiting a second to let everything settle down...")
-time.sleep(5)
 
 #Ask the user which port they want to use now if there is more than one port.
 #Instead of consistent loops, just use a recusrive function. This gets a port and makes sure it actually exists.  
@@ -38,7 +35,7 @@ def PORT_SELECTION():
             if PORT_SELECTED in ELEM:
                 VALID_PORT = True
                 return ELEM
-
+ 
 if ACTIVE_PORTS.__len__() == 1: 
     PORT = ACTIVE_PORTS[0]
     print("Only one port found.  Using port " + ACTIVE_PORTS[0])
@@ -56,7 +53,7 @@ def PORT_CONNECITON(PORT_NUMBER):
         while ATTEMPTS <= 3 and PORT_CONNECTED == False:
             try: 
                 print("ATTEMPT " + str(ATTEMPTS) + ".....")
-                ATMEGA_SERIAL = serial.Serial(PORT_NUMBER, 115200, timeout=0)
+                ATMEGA_SERIAL = serial.Serial(PORT_NUMBER, BAUD_RATE, timeout=0)
                 ATTEMPTS = 3
                 print("PORT OPENED!\n")
                 PORT_CONNECTED = True
@@ -75,7 +72,7 @@ def PORT_CONNECITON(PORT_NUMBER):
         ATTEMPTS = 1
         while ATTEMPTS <= 3 and PORT_CONNECTED == False:
             try: 
-                ATMEGA_SERIAL = serial.Serial(PORT_NUMBER, 115200, timeout=0)
+                ATMEGA_SERIAL = serial.Serial(PORT_NUMBER, BAUD_RATE, timeout=0)
                 ATTEMPTS = 3
                 PORT_CONNECTED = True
                 ATMEGA_SERIAL.close()
@@ -104,14 +101,18 @@ PPID_LIST = [] #PIDs / PPIDs to lock for volume changes.
 # 5: Get ready to run the actual volume mixing side of things. 
 def TASK_SELECTION():
     #Number of tasks to watch:
-    PROCESSES_REMAINING_STR = input("How many tasks are we controlling? (1-4): ")
-    while int(PROCESSES_REMAINING_STR) >= 4:
-        print("Pick a number from 1 to 4.")
-        PROCESSES_REMAINING_STR = input("Try that again.  I said 1-4: ")
-    PROCESSES_REMAINING = int(PROCESSES_REMAINING_STR)
+    try:
+        PROCESSES_REMAINING_STR = input("How many tasks are we controlling? (1-4): ")
+        while int(PROCESSES_REMAINING_STR) > 4:
+            print("Pick a number from 1 to 4.")
+            PROCESSES_REMAINING_STR = input("Try that again.  I said 1-4: ")
+        PROCESSES_REMAINING = int(PROCESSES_REMAINING_STR)
+    except:
+        pass
 
     #Gathering names of the tasks. 
     while PROCESSES_REMAINING != 0:
+        print("\nJust a heads up, for a mic monitor, use the task SVCHOST.")
         PROCESS_NAME = input("Enter a program name:    ")
         for ACTIVE_PROCESS in psutil.process_iter(): #checks for a match.
             try:
@@ -143,7 +144,7 @@ TASK_SELECTION()
 #Now for the just super duper fun part.  Volume control.  Really (I MEAN REALLY) RIVETING stuff in here.
 #Allocate all potential endpoints for every program. 
 VOLUME_ENDPOINTS = AudioUtilities.GetAllSessions()
-SERIAL_COMS = serial.Serial(PORT, 115200, timeout=0)
+SERIAL_COMS = serial.Serial(PORT, BAUD_RATE, timeout=0)
 
 #This function does the following things:
 # 1: It reads the serial inputs (Finally lol. When we go GUI it's not this bad.)
@@ -174,20 +175,27 @@ def ENDPOINT_ADJUSTMENT(SERIAL_INPUT):
                         if ENDPOINT.Process and ENDPOINT.Process.name() == PROCESS:
                             INDEX = PROCESS_LIST.index(PROCESS)
                             VOLUME_SET = float(POT_VOLUME_CURRENT[INDEX]) / 100
+                            if (VOLUME_SET * 100) < 1.0:
+                                VOLUME_SET = 0.0
                             VOLUME_CURRENT = float(PROCESS_VOLUME.GetMasterVolume())
                             #Get the properties of this volume and hook it.
                             #Adjust as needed down there.
                             
+                            #BUG: BAUD RATE NEEDS TO BE SET AT AT LEAST 115200 FOR THIS TO WORK OVER WIRE???? WTF WHY?
+                            #LATENCY MIGHT FUCK ME NOW. YAY.
+                            #These three Ifs stop the volume from flickering around like mad up/down.  
+                            #This is due to baud rate latency, I think? The issue is worse at lower baud rates.
+                            #That kinda sucks because I was hoping to run the ESP at 9600 not 115200.                   
                             if VOLUME_CURRENT != 0 and (VOLUME_SET) < VOLUME_CURRENT / 2.0:
                                 PROCESS_VOLUME.SetMasterVolume(VOLUME_CURRENT, None)
                             
-                            #These two Ifs stop the volume from flickering around like mad up/down because the liked to cause the audio
-                            #to skip/cut sometimes.  
                             if (VOLUME_SET + .075) > VOLUME_CURRENT: 
                                 PROCESS_VOLUME.SetMasterVolume(VOLUME_SET, None)
                             
                             if (VOLUME_SET - .75) < VOLUME_CURRENT:
                                 PROCESS_VOLUME.SetMasterVolume(VOLUME_SET, None)
+
+                            
 
     except:
         if SERIAL_DEBUG:
@@ -198,9 +206,15 @@ def ENDPOINT_ADJUSTMENT(SERIAL_INPUT):
 #Run that function and let it fly.  
 time.sleep(1)
 os.system('cls' if os.name == 'nt' else 'clear')
+
+#FIXME: GET RID OF THIS SHIT. IT HURTS ME A BIT.
+#This delay blows, but it makes 100% sure that the bootloader has finished up and is passing serial values. 
+print("Waiting a second to let everything settle down...")
+time.sleep(5)
+
 print("Running Now.....")
 while True:
     ENDPOINT_ADJUSTMENT(SERIAL_COMS)
     
 #BOOM BITCH IT WORKS.
-#Not sure what else this needs aside from getting the wirleess module connected and programmed.
+#Not sure what else this needs aside from getting the wirleess module connected and programmed but that goes in a new file.

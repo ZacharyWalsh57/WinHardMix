@@ -1,0 +1,29 @@
+#define LED_SERIAL_EXISTS 12
+#define LED_SERIAL_NA 13
+
+void setup(){
+    Serial.begin(9600);
+    delay(500);
+
+    pinMode(LED_SERIAL_EXISTS, OUTPUT);
+    pinMode(LED_SERIAL_NA, OUTPUT);
+
+    //Turn each on to just make sure pins are right. Then off. 
+    digitalWrite(LED_SERIAL_EXISTS, HIGH);
+    digitalWrite(LED_SERIAL_NA, HIGH);
+    delay(1000);
+    digitalWrite(LED_SERIAL_EXISTS, LOW);
+    digitalWrite(LED_SERIAL_NA, LOW);
+    delay(1000);
+}
+
+void loop(){
+    if (Serial.available() > 0) {
+        digitalWrite(LED_SERIAL_EXISTS, HIGH);
+        digitalWrite(LED_SERIAL_NA, LOW);
+    }
+    else {
+        digitalWrite(LED_SERIAL_EXISTS, LOW);
+        digitalWrite(LED_SERIAL_NA, HIGH);
+    }
+}
