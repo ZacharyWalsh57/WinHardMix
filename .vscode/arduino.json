@@ -1,6 +1,6 @@
 {
     "board": "esp8266:esp8266:huzzah",
     "port": "COM5",
-    "sketch": "ATMEGA328P Mixer\\Code\\ESP8266 Sketches\\ATMEGA_ESP_SERIAL_V2.ino",
+    "sketch": "ATMEGA328P Mixer\\Version 3.0 - ESP12F - CURRENT\\ESP Sketches\\SPI SLAVE\\SPISlave_Test.ino",
     "configuration": "CpuFrequency=80,VTable=flash,FlashSize=4M1M,LwIPVariant=v2mss536,Debug=Disabled,DebugLevel=None____,FlashErase=none,UploadSpeed=115200"
 }

@@ -3,16 +3,16 @@
         {
             "name": "Win32",
             "includePath": [
-                "C:\\Users\\zwals\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.4.2\\libraries\\espsoftwareserial-master",
-                "C:\\Users\\zwals\\OneDrive\\Documents\\Arduino\\libraries\\espsoftwareserial-master",
-                "C:\\Users\\zwals\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.4.2\\libraries\\SoftwareSerial",
                 "C:\\Users\\zwals\\AppData\\Local\\Arduino15\\packages\\esp8266\\tools\\**",
                 "C:\\Users\\zwals\\AppData\\Local\\Arduino15\\packages\\esp8266\\hardware\\esp8266\\2.4.2\\**",
                 "C:\\Program Files (x86)\\Arduino\\tools\\**",
                 "C:\\Program Files (x86)\\Arduino\\hardware\\arduino\\avr\\**"
             ],
             "forcedInclude": [],
-            "intelliSenseMode": "msvc-x64"
+            "intelliSenseMode": "msvc-x64",
+            "compilerPath": "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Tools/MSVC/14.16.27023/bin/Hostx64/x64/cl.exe",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
         }
     ],
     "version": 4
