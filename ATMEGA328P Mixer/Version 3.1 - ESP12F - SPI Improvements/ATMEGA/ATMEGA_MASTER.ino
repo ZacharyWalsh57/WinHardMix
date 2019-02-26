@@ -86,6 +86,44 @@ void send(const char *message) {
     Serial.println();
 }
 
+void checkPOSTStatus() {
+    String ESP_UPDATE_STATUS = ESP_SLAVE.readData();
+    if (ESP_UPDATE_STATUS.equals("UPDATING")) {
+        digitalWrite(YLW_GRN_LED, LOW);
+    }
+    if (ESP_UPDATE_STATUS.equals("UPDATED")) {
+        digitalWrite(YLW_GRN_LED, HIGH);
+    }
+}
+
+void sendAnalogs() {
+    //Grab analog vlaues on each pot.
+    int ANALOG_1 = analogRead(POT_1);
+    int ANALOG_2 = analogRead(POT_2);
+    int ANALOG_3 = analogRead(POT_3);
+    int ANALOG_4 = analogRead(POT_4);
+
+    //Convert each value to a 0-100 volume level.
+    //FIXME: Since I built this like an idiot, the volume is subtracted from 100.
+    //FIXME: This is because I pull the value from pin 2 compared to power and not ground on the circuit. 
+    float VOLUME_1 = 100.0 - ((ANALOG_1 / 1023.0) * 100);
+    float VOLUME_2 = 100.0 - ((ANALOG_2 / 1023.0) * 100);
+    float VOLUME_3 = 100.0 - ((ANALOG_3 / 1023.0) * 100);
+    float VOLUME_4 = 100.0 - ((ANALOG_4 / 1023.0) * 100);
+
+    //Assemble a list of all four volumes.  Take them and print each to the serial output.
+    int VOLUMES[] = {VOLUME_1, VOLUME_2, VOLUME_3, VOLUME_4};
+    int SELECTED;
+
+    for (SELECTED = 0; SELECTED < 4; SELECTED = SELECTED + 1) {
+        Serial.print("[DATA - ATMEGA] VOLUMES: ");
+        Serial.print(VOLUMES[SELECTED]);
+        Serial.print(" ");
+        
+    }
+    Serial.println("");
+}
+
 void setup() {
     pinMode(ORG_LED, OUTPUT);
     pinMode(YLW_GRN_LED, OUTPUT);
@@ -139,42 +177,7 @@ void setup() {
 
 }
 
-void checkPOSTStatus() {
-    String ESP_UPDATE_STATUS = ESP_SLAVE.readData();
-    if (ESP_UPDATE_STATUS.equals("UPDATING")) {
-        digitalWrite(YLW_GRN_LED, LOW);
-    }
-    if (ESP_UPDATE_STATUS.equals("UPDATED")) {
-        digitalWrite(YLW_GRN_LED, HIGH);
-    }
-}
-void sendAnalogs() {
-    //Grab analog vlaues on each pot.
-    int ANALOG_1 = analogRead(POT_1);
-    int ANALOG_2 = analogRead(POT_2);
-    int ANALOG_3 = analogRead(POT_3);
-    int ANALOG_4 = analogRead(POT_4);
 
-    //Convert each value to a 0-100 volume level.
-    //FIXME: Since I built this like an idiot, the volume is subtracted from 100.
-    //FIXME: This is because I pull the value from pin 2 compared to power and not ground on the circuit. 
-    float VOLUME_1 = 100.0 - ((ANALOG_1 / 1023.0) * 100);
-    float VOLUME_2 = 100.0 - ((ANALOG_2 / 1023.0) * 100);
-    float VOLUME_3 = 100.0 - ((ANALOG_3 / 1023.0) * 100);
-    float VOLUME_4 = 100.0 - ((ANALOG_4 / 1023.0) * 100);
-
-    //Assemble a list of all four volumes.  Take them and print each to the serial output.
-    int VOLUMES[] = {VOLUME_1, VOLUME_2, VOLUME_3, VOLUME_4};
-    int SELECTED;
-
-    for (SELECTED = 0; SELECTED < 4; SELECTED = SELECTED + 1) {
-        Serial.print("[DATA - ATMEGA] VOLUMES: ");
-        Serial.print(VOLUMES[SELECTED]);
-        Serial.print(" ");
-        
-    }
-    Serial.println("");
-}
 
 void loop() {
     /*
