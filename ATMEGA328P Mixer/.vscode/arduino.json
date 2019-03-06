@@ -1,7 +1,7 @@
 {
-    "board": "esp8266:esp8266:huzzah",
+    "board": "arduino:avr:diecimila",
     "port": "COM5",
-    "sketch": "Version 3.0 - ESP12F - CURRENT\\ESP Sketches\\SPI SLAVE\\SPI_V2\\ESP_SLAVE.ino",
-    "configuration": "CpuFrequency=80,VTable=flash,FlashSize=4M1M,LwIPVariant=v2mss536,Debug=Disabled,DebugLevel=None____,FlashErase=none,UploadSpeed=115200",
+    "sketch": "Version 3.1 - ESP12F - SPI Improvements\\ATMEGA\\ATMEGA_MASTER.ino",
+    "configuration": "cpu=atmega328",
     "programmer": "Arduino as ISP"
 }
