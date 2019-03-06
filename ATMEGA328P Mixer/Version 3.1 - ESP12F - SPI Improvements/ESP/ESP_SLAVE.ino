@@ -177,7 +177,7 @@ void setup() {
             }
         }
 
-        if (WEBSERVER_RUNNING) {
+        if (WEBSERVER_RUNNWING) {
             //INSERT FOR WEBSERVER ERROR.
         }
     });
