@@ -10,6 +10,11 @@
 #define POT_3 A3
 #define POT_4 A2
 
+float VOLUME_1;
+float VOLUME_2;
+float VOLUME_3;
+float VOLUME_4;
+
 //Class object to establish SPI communication between the ESP And the ATMEGA Chips
 class ESPSlave {
     private:
@@ -106,10 +111,10 @@ void sendAnalogs() {
     //Convert each value to a 0-100 volume level.
     //FIXME: Since I built this like an idiot, the volume is subtracted from 100.
     //FIXME: This is because I pull the value from pin 2 compared to power and not ground on the circuit. 
-    float VOLUME_1 = 100.0 - ((ANALOG_1 / 1023.0) * 100);
-    float VOLUME_2 = 100.0 - ((ANALOG_2 / 1023.0) * 100);
-    float VOLUME_3 = 100.0 - ((ANALOG_3 / 1023.0) * 100);
-    float VOLUME_4 = 100.0 - ((ANALOG_4 / 1023.0) * 100);
+    VOLUME_1 = 100.0 - ((ANALOG_1 / 1023.0) * 100);
+    VOLUME_2 = 100.0 - ((ANALOG_2 / 1023.0) * 100);
+    VOLUME_3 = 100.0 - ((ANALOG_3 / 1023.0) * 100);
+    VOLUME_4 = 100.0 - ((ANALOG_4 / 1023.0) * 100);
 
     //Assemble a list of all four volumes.  Take them and print each to the serial output.
     int VOLUMES[] = {VOLUME_1, VOLUME_2, VOLUME_3, VOLUME_4};
@@ -173,6 +178,11 @@ void setup() {
             digitalWrite(YLW_GRN_LED, LOW);
             Serial.println("[DEBUG] ALL GOOD HERE FOLKS");
         }
+    }
+
+    bool TRANSMIT = false;
+    while(ESP_WEBSERVER && ESP_READY) {
+    
     }
 
 }
